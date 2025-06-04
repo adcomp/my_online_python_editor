@@ -13,7 +13,8 @@ import threading
 
 # Flask import
 from flask import Flask, request, jsonify, render_template, Blueprint
-from flask_login import current_user
+### TODO
+# from flask_login import current_user
 from flask_cors import CORS
 from flask_socketio import SocketIO, Namespace, send, emit, disconnect
 
