@@ -25,32 +25,40 @@
 
 ## ⚙️ Installation & Setup
 
-1. **Clone this repository:**
+**Clone this repository:**
 
    ```bash
    git clone https://github.com/adcomp/my_online_python_editor.git
    ```
 
-2. **Install dependencies: ( Debian / Raspberry PI )**
+**Install dependencies:**
+
+   * for Debian / Raspberry PI
 
    ```bash
    sudo apt install python3-flask python3-flask-cors python3-flask-socketio python3-eventlet
    ```
+   
+   * with pip
 
-3. **Navigate to the project folder:**
+   ```bash
+   pip install flask flask-cors flask-socketio eventlet
+   ```
+
+**Navigate to the project folder:**
 
    ```bash
    cd mope
    ```
 
 
-4. **Run the server:**
+**Run the server:**
 
    ```bash
    python app.py
    ```
 
-5. **Visit your app:**
+**Visit your app:**
 
    ```
    http://localhost:9876/editor
