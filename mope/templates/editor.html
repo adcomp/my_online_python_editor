@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>My Online Python Editor</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="Online, Python, Editor">
+	<meta name="description" content="Online Python Editor">
+	<meta name="author" content="David Art">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="icon" href="{{ url_for('static', filename='atom.ico') }}" type="image/x-icon">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.41.0/ace.js" integrity="sha512-NniBwfvCiZ1advaXyBHY48iB65/Yld4m/RJoDJNE1a1Kj2DjJO/Z503zUaumxxXHDnWDs+mYqsuDR3hvuHTvxQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.js" integrity="sha512-8BHxHDLsOHx+flIrQ0DrZcea7MkHqRU5GbTHmbdzMRnAaoCIkZ97PqZcXJkKZckMMhqfoeaJE+DNUVuyoQsO3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body>
+	<div class="container">
+		
+		<div class="col left">
+			<header>
+				<div id="socket_io">-</div>
+				<div class="col-name">EDITOR</div>
+				<div class="file-name">main.py</div>
+				<button id="bt_run" class="bt_blue">run</button>
+<!--
+				<button id="bt_test" class="bt_blue">test</button>
+				<button id="bt_dbg" class="bt_blue">dbg</button>
+-->
+			</header>
+			<div id="editor" contenteditable="true" spellcheck="false"></div>
+		</div>
+		
+		<div class="col right">
+			<header>
+				<div class="col-name">OUTPUT</div>
+				<button id="bt_clear" class="bt_green">clear</button>
+			</header>
+			<div id="output"></div>
+		</div>
+	</div>
+
+<script>
+	// configure ACE (Editor)
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/dracula");
+    editor.session.setMode("ace/mode/python");
+    editor.setFontSize("14px");
+    
+    // need "plugins"
+	//~ editor.setOption("enableBasicAutocompletion", true);
+	//~ editor.setOption("enableLiveAutocompletion", true);
+
+	// SocketIO
+	const socket = io(); 
+
+	// Socket connect callback
+	socket.on("connect", () => {
+		console.log("connected");
+		$("#socket_io").text(" > ")
+	});
+
+	// Socket disconnect callback
+	socket.on("disconnect", () => {
+		console.log("disconnected");
+		$("#socket_io").text(" - ")
+	});
+
+	// Event sent by Server when running code
+	socket.on("execute_code", function(msg) {
+		
+		if (msg.cmd == "CLEAR") {
+			$("#output").empty();
+			}
+		
+		if (msg.cmd == "RUN_CODE") {
+			console.log("### SOCKET : RUN CODE");
+			}
+		
+		if (msg.cmd == "LINENO") {
+			editor.gotoLine(msg.data, 1, true);
+			}
+			
+		if (msg.cmd == "OUTPUT") {
+			append_output(msg.data);
+			}
+
+		if (msg.cmd == "ERROR") {
+			append_output("--- ERROR ---", "error");
+			append_output(msg.data);
+			$("#bt_run").text("run");
+			}
+
+		if (msg.cmd == "END") {
+			append_output("--- END PROCESS ---", "end")
+			$("#bt_run").text("run");
+			}
+	});
+
+
+	// append data to output tag
+	function append_output(data, type) {
+		if (data == "") { data = "<br />"; }
+		
+		if (type == undefined) {
+			$("#output").append("<p>" + data + "</p>");
+			}
+		else {
+			$("#output").append('<p class="' + type + '">' + data + "</p>");
+			}
+	}
+
+	// Send code to server Or ask to stop ..
+	function run_code() {
+		if ($("#bt_run").text() == "run") {
+				$("#bt_run").text("stop");
+				$("#output").text("");
+				var code = editor.getValue();
+				socket.emit("execute_code", code);
+			}
+		else {
+				$("#bt_run").text("run");
+				socket.emit("stop_code");
+			}
+	}
+
+	// Get code from server and paste into editor
+	function get_code() {
+		$.get("get_code", function(data, status){
+			editor.setValue(data, 1)
+		});
+	}
+
+
+	// Button "clear"
+	$("#bt_clear").click(function() {
+		$("#output").empty();
+		}
+	);
+
+	// Button "run"
+	$("#bt_run").click(function() { 
+		run_code();
+		}
+	);
+
+	// TODO : just a test ..
+	// $("#bt_dbg").click(function() { });
+
+	// TODO : just a test ..
+	// $("#bt_test").click(function() { );
+
+	// Keybind ( F8 )
+	window.onkeydown = function(evt) {
+		if (evt.keyCode == 119) //F8
+			run_code();
+	};
+
+	// Get the code from server when page is loaded
+	$(document).ready(function() {
+		get_code();
+	});
+
+</script>
+
+</body>
+</html>
