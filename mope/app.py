@@ -32,7 +32,7 @@ FILE_REALPATH = FILE_PATH + FILE_NAME
 ### Server config
 HOST = "0.0.0.0"
 PORT = 9876
-DEBUG = True
+DEBUG = False
 
 
 ### Global .. bad  :(

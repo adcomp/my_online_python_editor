@@ -3,33 +3,100 @@ Style for My Online Python Editor
 by David Art [aka] ADcomp
 */
 
-html, body {
-	height: 100%;
+/* ALL RESET */
+* {
+	margin:0;
+	padding:0;
+	box-sizing: border-box;
 }
+
+html, body { height: 100%; }
 
 body {
 	margin: 0 auto;
 	padding: 0; 
 	background: black;
-	font-family: Verdana, sans-serif;
-	font-size: 15px;
-	line-height: 1.5;
+	font-family: "Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+	font-size: 12px;
+	line-height: 1;
 }
 
+h1, h2, h3 {
+	margin-bottom: 10px;
+	padding: 4px;
+}
+
+hr { margin: 8px 0; }
+
+
 /* TABLE & COLUMN */
-.container {
+.app {
 	display:table;
 	background-color: black;
 	width:100%;
 	height:100%;
 	box-sizing: border-box;
-	padding: 4px;
+	padding: 0;
+	margin: 0;
 }
 
 .col {
 	box-sizing: border-box;
-	padding: 2px;
-	height:100%; /* need for firefox */
+	padding: 0;
+	margin: 0;
+	/* need for firefox */
+	height:100%;
+	display:table-cell;
+	vertical-align: top;
+}
+
+.sidebar {
+	background-color: #212121;
+	width: 64px;
+}
+
+.sidebar_panel {
+	background-color: #2C2C2C;
+	width: 256px;
+	display: hidden;
+}
+
+.sidebar_panel h1 {
+	color: #eee;
+	height: 48px;
+	padding: 10px;
+}
+
+.sidebar_box {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	padding-top: 10px;
+}
+
+.sidebar_box button {
+	display: block;
+	margin: 8px auto;
+	width: 48px;
+	height: 48px;
+	border: 2px none;
+	border-radius: 4px;
+	background: none;
+	color: #eee;
+}
+
+.sidebar_box button:hover {	
+	background: #4A4D59; 
+	border: 2px solid #88DDD4;
+}
+
+.editor-logo {
+	width: 40px;
+	height: 40px;
+	display: initial;
+	margin: 0;
+	padding: 0;
 }
 
 .col-name, .file-name {
@@ -43,17 +110,18 @@ body {
 	font-size: 14px;
 }
 
-.left {
-	display:table-cell;
+#editor_box {
 	background-color:#222;
-	width:50%;
+	width:60%;
 	min-width:20%;
 	resize: horizontal;
 }
-.right {
-	display:table-cell;
+
+#output_box {
 	background-color:#222;
-	width:50%;
+	/* width:50%; */
+	overflow: auto;
+	border-left: 1px solid #666;
 }
 
 .col header {
@@ -63,7 +131,11 @@ body {
 	height: 48px;
 }
 
-/* BUTTON */
+/*
+.col h2 { display: initial; }
+*/
+
+/* BUTTON THEME */
 .col header button {
 	margin: 0;
 	min-width: 64px;
@@ -94,7 +166,7 @@ body {
 }
 
 .bt_green {
-	background: limegreen;
+	background: #078D07;
 	border: 1px solid yellowgreen;
 }
 .bt_green:hover {
@@ -102,6 +174,17 @@ body {
 }
 .bt_green:active {
 	background-color: mediumseagreen;
+}
+
+.bt_dark {
+	background: #2C2C2C;
+	border: 1px solid #3B3B3B;
+}
+.bt_dark:hover {
+	border: 1px solid #2A2A2A;
+}
+.bt_dark:active {
+	background-color: #212121;
 }
 
 /* EDITOR & OUTPUT */
@@ -112,27 +195,17 @@ body {
 	padding: 4px;
 	font-family: Consolas, monospace;
 	font-size: 14px;
-/*
-	line-height: 1.5;
-*/
 	background: #282828;
 	box-sizing: border-box;
 }
 
-#output { 
-	color: #aea;
-}
 
-#output:focus {
-	outline: none !important;
-}
-
-
+/* OUTPUT */
 #output p {
 	max-width: 99%;
-	margin:0;
-	padding:0;
-	color: #D7FFD7;
+	margin: 0;
+	padding: 2px;
+	color: #eee;
 }
 
 #output p.end{
@@ -149,4 +222,43 @@ body {
     align-items: center;
     justify-content: center;
     min-width: 32px;
+}
+
+.list_files {
+
+}
+
+#add_file {
+	display: block;
+	width: 90%;
+	height: 40px;
+	margin: 0 auto;
+	margin-bottom: 8px;
+	border-radius: 8px;
+	text-align: left;
+	padding-left: 16px;
+}
+
+.list_files button {
+	display: block;
+	width: 90%;
+	height: 40px;
+	margin: 0 auto;
+	margin-bottom: 8px;
+	border-radius: 8px;
+	text-align: left;
+	padding-left: 16px;
+}
+
+
+/* ALIGN RIGHT */
+#bt_output_toggle { margin-left: auto; }
+
+#editor_theme {
+	margin: 4px;
+	text-align: center;
+	background: #3E7A90;
+	color: #FFFFFF;
+	border: 1px solid #315F6F;
+	border-radius: 4px;
 }
