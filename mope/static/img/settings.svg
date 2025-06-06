@@ -24,9 +24,9 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="px"
      showgrid="true"
-     inkscape:zoom="14.914651"
-     inkscape:cx="14.415356"
-     inkscape:cy="21.857702"
+     inkscape:zoom="7.4573256"
+     inkscape:cx="16.627945"
+     inkscape:cy="15.957463"
      inkscape:window-width="960"
      inkscape:window-height="1010"
      inkscape:window-x="0"
@@ -42,9 +42,6 @@
      inkscape:label="Calque 1"
      inkscape:groupmode="layer"
      id="layer1"><path
-       style="fill:none;fill-opacity:1;stroke:#fdfdfd;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-       d="M 12,15 H 5 v 4 h 7 l -5,5 3,3 5,-5 v 7 h 4 v -7 c 0,0 5,5 5,5 l 3,-3 -5,-5 h 7 v -4 h -7 l 5,-5 -3,-3 -5,5 V 5 h -4 v 7 L 10,7 7,10 Z"
-       id="path21389" /><path
-       style="fill:none;fill-opacity:1;stroke:#fdfdfd;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
-       d="m 15,15 v 4 h 4 v -4 z"
-       id="path21391" /></g></svg>
+       id="path844"
+       style="fill:none;stroke:#e5e5e5;stroke-width:0.8;stroke-linecap:round;stroke-linejoin:round"
+       d="M 15 5 L 15 13.330078 L 8 8.8144531 L 5.8320312 12.175781 L 13.164062 16.904297 L 5.6074219 21.267578 L 7.6074219 24.732422 L 15 20.464844 L 15 29 L 19 29 L 19 20.669922 L 26 25.185547 L 28.167969 21.824219 L 20.835938 17.095703 L 28.392578 12.732422 L 26.392578 9.2675781 L 19 13.535156 L 19 5 L 15 5 z " /></g></svg>

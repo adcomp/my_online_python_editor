@@ -61,11 +61,14 @@
 		<div class="col" id="editor_box">
 			<header>
 
-				<div class="col-name">EDITOR</div>
-				<div class="file-name">main.py</div>
+				<div class="col_name">EDITOR</div>
+				<div id="editor_filename" class="editor_filename">main.py</div>
 
-				<div id="socket_io">
+				<div id="socket_io" class="tooltip">
 					<span id="socketio_status"></span>
+					<div class="tooltip">
+					<span class="tooltiptext">SocketIO Status</span>
+					</div>
 				</div>
 
 				<button id="bt_run" class="bt_blue">run</button>
@@ -74,7 +77,7 @@
 				<button id="bt_dbg" class="bt_blue">dbg</button>
 -->
 
-				<label for="editor_theme">Language</label>
+				<label for="editor_theme">Theme</label>
 				<select name="editor_theme" id="editor_theme">
 					<option value="dracula">dracula</option>
 					<option value="twilight">twilight</option>
@@ -84,16 +87,21 @@
 					<option value="tomorrow_night">tomorrow_night</option>
 				</select>
 
+<!--
 				<button id="bt_output_toggle" class="bt_dark">
 					<img src="{{ url_for('static', filename='img/toggle.svg') }}" alt="toggle" />
 				</button>
+-->
+					
+					<img id="bt_output_toggle" src="{{ url_for('static', filename='img/toggle.svg') }}" alt="toggle" />
+					
 			</header>
 			<div id="editor" contenteditable="true" spellcheck="false"></div>
 		</div>
 		
 		<div class="col" id="output_box">
 			<header>
-				<div class="col-name">OUTPUT</div>
+				<div class="col_name">OUTPUT</div>
 				<button id="bt_clear" class="bt_green">clear</button>
 			</header>
 			<div id="output"></div>
