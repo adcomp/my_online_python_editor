@@ -6,7 +6,7 @@
 
 ## 🚀 Features
 
-* ✅ Write Python directly
+* ✅ Write Python directly  ( with [Ace Editor](https://ace.c9.io/) )
 * ✅ Output content with HTML tag
 * ✅ Built with Flask/SocketIO under the hood
 * ✅ Minimal setup — no frontend frameworks or build tools needed
