@@ -27,19 +27,26 @@
 
 		<div class="col sidebar" id="sidebar_bar" >
 			<div class="sidebar_box">
-				<img class="editor-logo" src="{{ url_for('static', filename='python.png') }}" alt="Editor logo">
-				<button id="toggle_sidebar" class="sidebar__button">>></button>
-				<button type="button">A</button>
-				<button type="button">B</button>
-				<button type="button">C</button>
-				<button type="button">D</button>
-				<button type="button">E</button>
-				<button type="button">F</button>
+				<img class="editor-logo" src="{{ url_for('static', filename='img/python.svg') }}" alt="Editor logo">
+				
+				<button id="toggle_sidebar" class="sidebar_button" type="button">
+					<img src="{{ url_for('static', filename='img/toggle.svg') }}" alt="toggle" />
+				</button>
+				
+				<button id="bt_files" class="sidebar_button" type="button">
+					<img src="{{ url_for('static', filename='img/files.svg') }}" alt="files" />
+				</button>
+				
+				<button id="bt_settings" class="sidebar_button" type="button">
+					<img src="{{ url_for('static', filename='img/settings.svg') }}" alt="settings" />
+				</button>
+
+
 			</div>
 		</div>
 
 
-		<div class="col sidebar_panel" id="sidebar_panel">
+		<div class="col sidebar_panel hidden" id="sidebar_panel">
 			<h1>Project files</h1>
 			<button id="add_file">Add file +</button>
 			<hr />
@@ -53,9 +60,14 @@
 
 		<div class="col" id="editor_box">
 			<header>
-				<div id="socket_io">-</div>
+
 				<div class="col-name">EDITOR</div>
 				<div class="file-name">main.py</div>
+
+				<div id="socket_io">
+					<span id="socketio_status"></span>
+				</div>
+
 				<button id="bt_run" class="bt_blue">run</button>
 <!--
 				<button id="bt_test" class="bt_blue">test</button>
@@ -72,7 +84,9 @@
 					<option value="tomorrow_night">tomorrow_night</option>
 				</select>
 
-				<button id="bt_output_toggle" class="bt_dark">>>></button>
+				<button id="bt_output_toggle" class="bt_dark">
+					<img src="{{ url_for('static', filename='img/toggle.svg') }}" alt="toggle" />
+				</button>
 			</header>
 			<div id="editor" contenteditable="true" spellcheck="false"></div>
 		</div>
@@ -105,13 +119,15 @@
 	// Socket connect callback
 	socket.on("connect", () => {
 		console.log("connected");
-		$("#socket_io").text(" > ")
+		$("#socketio_status").removeClass("disconnected");
+		$("#socketio_status").addClass("connected");
 	});
 
 	// Socket disconnect callback
 	socket.on("disconnect", () => {
 		console.log("disconnected");
-		$("#socket_io").text(" - ")
+		$("#socketio_status").removeClass("connected");
+		$("#socketio_status").addClass("disconnected");
 	});
 
 	// Event sent by Server when running code
@@ -197,8 +213,14 @@
 	);
 
 	// Button "toggle_sidebar"
-	$("#toggle_sidebar").click(function() { 
-		$("#sidebar_panel").toggle();
+	$("#toggle_sidebar").click(function() {
+		var is_hidden = $("#sidebar_panel").hasClass("hidden");
+		if (is_hidden) {
+			$("#sidebar_panel").removeClass("hidden");
+			}
+		else {
+			$("#sidebar_panel").addClass("hidden");
+			}
 		}
 	);
 
@@ -236,8 +258,6 @@
 
 	// Get the code from server when page is loaded
 	$(document).ready(function() {
-		$("#sidebar_panel").hide(200);
-		
 		get_code();		
 	});
 

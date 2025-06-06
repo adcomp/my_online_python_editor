@@ -1,6 +1,6 @@
 /*
-Style for My Online Python Editor
-by David Art [aka] ADcomp
+	CSS - My Online Python Editor
+	by David Art [aka] ADcomp
 */
 
 /* ALL RESET */
@@ -16,18 +16,13 @@ body {
 	margin: 0 auto;
 	padding: 0; 
 	background: black;
-	font-family: "Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+	font-family: "Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans",sans-serif;
 	font-size: 12px;
 	line-height: 1;
 }
 
-h1, h2, h3 {
-	margin-bottom: 10px;
-	padding: 4px;
-}
-
+h1, h2, h3 { margin-bottom: 10px; padding: 4px; }
 hr { margin: 8px 0; }
-
 
 /* TABLE & COLUMN */
 .app {
@@ -44,59 +39,53 @@ hr { margin: 8px 0; }
 	box-sizing: border-box;
 	padding: 0;
 	margin: 0;
-	/* need for firefox */
-	height:100%;
+	height:100%;	/* need for firefox ? */
 	display:table-cell;
 	vertical-align: top;
 }
 
-.sidebar {
-	background-color: #212121;
-	width: 64px;
-}
+/* SIDEBAR */
+.sidebar { background: #212121; width: 64px; border-right: 2px solid #111; }
 
-.sidebar_panel {
-	background-color: #2C2C2C;
-	width: 256px;
-	display: hidden;
-}
+.sidebar_panel { background: #2C2C2C; width: 256px; border-right: 2px solid #111; }
 
-.sidebar_panel h1 {
-	color: #eee;
-	height: 48px;
-	padding: 10px;
-}
+.sidebar_panel h1 { color: #eee; height: 48px; padding: 10px; }
 
 .sidebar_box {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	align-items: center;
-	padding-top: 10px;
+	padding-top: 4px;
 }
 
-.sidebar_box button {
-	display: block;
-	margin: 8px auto;
-	width: 48px;
-	height: 48px;
-	border: 2px none;
-	border-radius: 4px;
+.sidebar_button {
 	background: none;
-	color: #eee;
+	align-items: center;
+	border: 2px solid rgba(0,0,0,0);
+	border-radius: 4px;
+	box-sizing: border-box;
+	cursor: pointer;
+	display: inline-flex;
+	justify-content: center;
+	min-block-size: 44px;
+	min-inline-size: 44px;
+	padding: 4px;
+	position: relative;
+	text-align: center;
+	text-decoration: none;
+	margin: 10px 0;
 }
 
-.sidebar_box button:hover {	
-	background: #4A4D59; 
-	border: 2px solid #88DDD4;
-}
+.sidebar_box button:hover {	background: #4A4D59; border-color: #787878; }
+
 
 .editor-logo {
-	width: 40px;
-	height: 40px;
+	width: 34px;
+	height: 34px;
 	display: initial;
-	margin: 0;
-	padding: 0;
+	margin-top: 4px;
+	margin-bottom: 8px;
 }
 
 .col-name, .file-name {
@@ -115,13 +104,14 @@ hr { margin: 8px 0; }
 	width:60%;
 	min-width:20%;
 	resize: horizontal;
+	overflow: auto;
 }
 
 #output_box {
 	background-color:#222;
 	/* width:50%; */
 	overflow: auto;
-	border-left: 1px solid #666;
+	border-left: 1px solid #444;
 }
 
 .col header {
@@ -129,13 +119,11 @@ hr { margin: 8px 0; }
 	background: #011223;
 	margin: 0;
 	height: 48px;
+	border-top: 1px solid #111;
+	border-bottom: 1px solid #111;
 }
 
-/*
-.col h2 { display: initial; }
-*/
-
-/* BUTTON THEME */
+/* HEADER BUTTON */
 .col header button {
 	margin: 0;
 	min-width: 64px;
@@ -149,46 +137,24 @@ hr { margin: 8px 0; }
 	font-weight: bold;
 }
 
-.col header button:active {
-  box-shadow: 0 2px #444;
-  transform: translateY(1px);
-}
+.col header button:active { box-shadow: 0 2px #444; transform: translateY(1px); }
 
-.bt_blue {
-	background: #0556f3;
-	border: 1px solid dodgerblue;
-}
-.bt_blue:hover {
-	border: 1px solid midnightblue;
-}
-.bt_blue:active {
-  background-color: dodgerblue;
-}
+/* COLOR BUTTON */
+.bt_blue { background: #0556f3;	border: 1px solid dodgerblue; }
+.bt_blue:hover { border: 1px solid midnightblue; }
+.bt_blue:active { background-color: dodgerblue; }
 
-.bt_green {
-	background: #078D07;
-	border: 1px solid yellowgreen;
-}
-.bt_green:hover {
-	border: 1px solid darkgreen;
-}
-.bt_green:active {
-	background-color: mediumseagreen;
-}
+.bt_green { background: #078D07; border: 1px solid yellowgreen; }
+.bt_green:hover { border: 1px solid darkgreen; }
+.bt_green:active { background-color: mediumseagreen; }
 
-.bt_dark {
-	background: #2C2C2C;
-	border: 1px solid #3B3B3B;
-}
-.bt_dark:hover {
-	border: 1px solid #2A2A2A;
-}
-.bt_dark:active {
-	background-color: #212121;
-}
+.bt_dark { background: #2C2C2C; border: 1px solid #3B3B3B; }
+.bt_dark:hover { border: 1px solid #2A2A2A; }
+.bt_dark:active { background-color: #212121; }
+
 
 /* EDITOR & OUTPUT */
-.col #editor, .col #output {
+#editor, #output {
 	height: calc(100% - 48px);
 	width: 100%;
 	margin: 0;
@@ -199,7 +165,6 @@ hr { margin: 8px 0; }
 	box-sizing: border-box;
 }
 
-
 /* OUTPUT */
 #output p {
 	max-width: 99%;
@@ -208,25 +173,21 @@ hr { margin: 8px 0; }
 	color: #eee;
 }
 
-#output p.end{
-	color: #829482;
-}
-
-#output p.error{
-	color: #A83636;
-}
+#output p.end{ color: #829482; }
+#output p.error{ color: #A83636; }
 
 #socket_io {
-	color: green;
 	display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 32px;
+    margin: 0 6px;
 }
 
-.list_files {
+#socketio_status { width: 16px; height: 16px; border-radius: 6px;}
+.connected { background: #00AA00; border: 1px solid #0C670C; }
+.disconnected { background: red; border: 1px solid darkred; }
 
-}
+.list_files {}
 
 #add_file {
 	display: block;
@@ -250,7 +211,6 @@ hr { margin: 8px 0; }
 	padding-left: 16px;
 }
 
-
 /* ALIGN RIGHT */
 #bt_output_toggle { margin-left: auto; }
 
@@ -262,3 +222,5 @@ hr { margin: 8px 0; }
 	border: 1px solid #315F6F;
 	border-radius: 4px;
 }
+
+.hidden { display: none; }
