@@ -47,14 +47,30 @@
 
 
 		<div class="col sidebar_panel hidden" id="sidebar_panel">
-			<h1>Project files</h1>
-			<button id="add_file">Add file +</button>
-			<hr />
-			<div class="list_files">
-				<button>main.py</button>
-				<button>test.py</button>
-				<button>sysinfo.py</button>
+			<div id="panel_files">
+				<h1>Project files</h1>
+				<button id="add_file">Add file +</button>
+				<hr />
+				<div class="list_files">
+					<button>main.py</button>
+					<button>test.py</button>
+					<button>sysinfo.py</button>
+				</div>
 			</div>
+
+			<div id="panel_settings">
+				<h1>Settings</h1>
+				<label for="editor_theme">Theme</label>
+				<select name="editor_theme" id="editor_theme">
+					<option value="dracula">dracula</option>
+					<option value="twilight">twilight</option>
+					<option value="monokai">monokai</option>
+					<option value="nord_dark">nord_dark</option>
+					<option value="one_dark">one_dark</option>
+					<option value="tomorrow_night">tomorrow_night</option>
+				</select>
+			</div>
+
 		</div>
 
 
@@ -72,28 +88,15 @@
 				</div>
 
 				<button id="bt_run" class="bt_blue">run</button>
-<!--
-				<button id="bt_test" class="bt_blue">test</button>
-				<button id="bt_dbg" class="bt_blue">dbg</button>
--->
-
-				<label for="editor_theme">Theme</label>
-				<select name="editor_theme" id="editor_theme">
-					<option value="dracula">dracula</option>
-					<option value="twilight">twilight</option>
-					<option value="monokai">monokai</option>
-					<option value="nord_dark">nord_dark</option>
-					<option value="one_dark">one_dark</option>
-					<option value="tomorrow_night">tomorrow_night</option>
-				</select>
+				
+				<button id="bt_test" class="bt_dark">test</button>
+				<button id="bt_dbg" class="bt_dark">dbg</button>
 
 <!--
-				<button id="bt_output_toggle" class="bt_dark">
-					<img src="{{ url_for('static', filename='img/toggle.svg') }}" alt="toggle" />
-				</button>
+
 -->
-					
-					<img id="bt_output_toggle" src="{{ url_for('static', filename='img/toggle.svg') }}" alt="toggle" />
+
+				<img id="bt_output_toggle" src="{{ url_for('static', filename='img/toggle.svg') }}" alt="toggle" />
 					
 			</header>
 			<div id="editor" contenteditable="true" spellcheck="false"></div>
@@ -108,6 +111,35 @@
 		</div>
 
 	</div>
+
+
+<!-- The Modal -->
+<div id="modal_div" class="modal">
+  <!-- Modal content -->
+	<div class="modal-content">
+		<span id="modal_close" class="close">&times;</span>
+		<div class="modal-content__header">
+			<h2 class="modal-content__heading">Add a new file ...</h2>
+		</div>
+		<div class="modal-content__body">
+			<div class="modal-content__input-section">
+				<label for="0">Name your file</label>
+				<div class="modal-content__input">
+					<input type="text" id="0" value="">
+				</div>
+			</div>
+		</div>
+		<div class="modal-content__buttons">
+			<button class="btn btn--primary"><span>Add file</span></button>
+			<button class="btn btn--secondary"><span>Cancel</span></button>
+		</div>
+	</div>
+</div>
+
+
+
+
+
 
 <script>
 
@@ -197,8 +229,11 @@
 	}
 
 	// Get code from server and paste into editor
-	function get_code() {
-		$.get("get_code", function(data, status){
+	function get_code(filename="main.py") {
+		console.log(filename)
+		
+		$.get("get_code", { "name": filename }, function(data, status){
+			console.log("get code status", status);
 			editor.setValue(data, 1)
 		});
 	}
@@ -222,29 +257,19 @@
 
 	// Button "toggle_sidebar"
 	$("#toggle_sidebar").click(function() {
-		var is_hidden = $("#sidebar_panel").hasClass("hidden");
-		if (is_hidden) {
-			$("#sidebar_panel").removeClass("hidden");
-			}
-		else {
-			$("#sidebar_panel").addClass("hidden");
-			}
-		}
-	);
+		$("#sidebar_panel").toggleClass("hidden");
+	});
+
 
 	$("#bt_output_toggle").click(function () { 
 		$("#output_box").toggle();
-		var isVisible = $('#output_box').is(':visible')
-		if (isVisible) {
-			$("#editor_box").css("width", "50%");
-			$("#editor_box").css("min-width", "20%");
-		}
-		else {
-			$("#editor_box").css("width", "auto");
-			$("#editor_box").css("min-width", "0");
-		}
-		
 	});
+
+
+	$("#editor_resize").on('input change', function() {
+		set_editor_width($(this).val())
+	});
+
 
 	$("#editor_theme").on( "change", function() {
 		console.log("change editor theme :" + this.value)
@@ -253,10 +278,24 @@
 
 
 	// TODO : just a test ..
-	// $("#bt_dbg").click(function() { });
+	$("#bt_dbg").click(function() {
+		socket.emit("test", function(data) {
+			console.log("test", data);
+			});
+	});
 
 	// TODO : just a test ..
 	// $("#bt_test").click(function() { );
+
+	$("#add_file").click(function() {
+		$("#modal_div").css("display", "block");
+	});
+
+	$("#modal_close").click(function() {
+		$("#modal_div").css("display", "none");
+	});
+
+
 
 	// Keybind ( F8 )
 	window.onkeydown = function(evt) {
@@ -268,6 +307,51 @@
 	$(document).ready(function() {
 		get_code();		
 	});
+
+
+
+
+
+
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on the button, open the modal
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </script>
 

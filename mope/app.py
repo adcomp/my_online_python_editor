@@ -109,6 +109,27 @@ def handle_disconnect(reason):
 	print("### SOCKET : Client disconnected:", reason)
 
 
+@socketio.on("add_file")
+def add_file(filename):
+	print("### ADD FILE : %s" % filename)
+
+	file_realpath = FILE_PATH + filename
+	
+	# check if file exists ..
+	if os.path.exists(file_realpath):
+		print("=> file already exists ..")
+
+	else:
+		# Creates a new file
+		with open(file_realpath, 'w') as fp:
+			pass
+
+
+@socketio.on("test")
+def my_test():
+	return "Hello, World!"
+
+
 @socketio.on("execute_code")
 def execute_code(code):
 	print("### SOCKET IO : execute_code ...")
@@ -155,21 +176,47 @@ def ack():
 
 
 ### FLASK ROUTE ###
-@app.route('/editor')
-def editor():
-	return render_template('editor.html')
-
-
 @app.route('/')
 def index():
 	return render_template('index.html')
 
 
-@app.route('/get_code')
+@app.route('/editor')
+def editor():
+	return render_template('editor.html')
+
+
+@app.route('/editor_tmp')
+def editor_tmp():
+	return render_template('editor_tmp.html')
+
+
+@app.route('/get_code', methods=['GET'])
 def get_code():
-	with open(FILE_REALPATH, 'r') as file:
-		file_content = file.read()
-	return file_content
+	filename = "main.py"
+	
+	if request.method == 'GET':
+		filename = request.args.get('name', default="main.py", type=str)
+	
+	file_realpath = FILE_PATH + filename
+	
+	try:
+		with open(FILE_REALPATH, 'r') as file:
+			file_content = file.read()
+		return file_content
+	except:
+		return "can't open %s" % filename
+
+
+@app.route('/get_info', methods=['GET'])
+def get_info():
+	print("### GET INFO")
+	if request.method == 'GET':
+		print("  - request method = GET")
+		print(request.args)
+
+	return "Hello, World!"
+
 
 
 if __name__ == '__main__':

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>My Online Python Editor</title>
+	<meta charset="UTF-8">
+	<meta name="keywords" content="Online, Python, Editor">
+	<meta name="description" content="Online Python Editor">
+	<meta name="author" content="David Art">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="icon" href="{{ url_for('static', filename='mope.ico') }}" type="image/x-icon">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+	<!-- JQUERY -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+<style>
+
+html, body { height: 100%; }
+
+body {
+	margin: 0 auto;
+	padding: 0; 
+	background: black;
+	font-family: "Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans",sans-serif;
+	font-size: 12px;
+	line-height: 1;
+}
+
+
+.flex-container {
+  display: flex;
+  align-items: stretch;
+  background-color: #222;
+  align-content: stretch;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.flex-container > div {
+  background-color: #333;
+  color: #eee;
+  margin: 4px;
+  text-align: center;
+  line-height: 75px;
+  font-size: 30px;
+}
+
+.sidebar { width: 64px; }
+
+.editor {
+	min-width: 400px;
+width: 50%;
+overflow: auto;
+resize: horizontal;
+flex: 0 0 auto;
+}
+
+.output {
+width: auto;
+min-width: 200px;
+margin: 0 auto;
+flex: 2 1 0;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+<div class="flex-container">
+  <div class="sidebar">1</div>
+  <div class="editor">2</div>
+  <div class="output">
+    <p>Hello World</p>
+  </div>  
+</div>
+
+</body>
+</html>
