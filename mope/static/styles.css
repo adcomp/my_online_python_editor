@@ -3,6 +3,37 @@
 	by David Art [aka] ADcomp
 */
 
+:root {  
+  --red: #F22323;
+  --red-light: #E13E4D;
+  --red-dark: #820808;
+  
+  --green: #078D07;
+  --green-light: mediumseagreen;
+  --green-dark: darkgreen;
+  
+  --blue: #0556f3;
+  --blue-light: dodgerblue;
+  --blue-dark: midnightblue;
+  
+  --dark-gray: #666;
+  --dark-lighter: #444;
+  --dark-light: #333;
+  --dark: #222;
+  --darker: #111;
+
+  --font-light: #eee;
+  --font-dark: #333;
+
+  --bg-light: #eee;
+  --bg-dark: #333;
+
+
+
+  --beige: #ffeead;
+  --yellow: #ffcc5c;
+}
+
 /* ALL RESET */
 * {
 	margin:0;
@@ -15,122 +46,102 @@ html, body { height: 100%; }
 body {
 	margin: 0 auto;
 	padding: 0; 
-	background: black;
+	background: var(--darker);
 	font-family: "Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans",sans-serif;
 	font-size: 12px;
 	line-height: 1;
 }
 
-h1, h2, h3 { margin-bottom: 10px; padding: 4px; }
-hr { margin: 8px 0; }
+h1, h2, h3 { text-align: left; margin-bottom: 10px; color: var(--font-light); }
+hr { border-color: var(--dark-lighter); margin: 8px 0; }
+label { display: block; }
 
+
+.align-left { text-align: left; }
+.align-right { text-align: right; }
+.align-center { text-align: center; }
+.font-light { color: var(--font-light); }
+.font-dark { color: var(--font-dark); }
+.bg-dark { background: var(--bg-dark); }
+.bg-light { background: var(--bg-light); }
+.align-items-center { align-items: center; }
 
 /* TABLE & COLUMN */
 .app {
-/*
-	display:table;
-*/
-	background-color: black;
-	width:100%;
-	height:100%;
+	background: var(--dark);
+	width:100%; height:100%;
+	padding: 0; margin: 0;
 	box-sizing: border-box;
-	padding: 0;
-	margin: 0;
-
 	display: flex;
 	align-items: stretch;
 	align-content: stretch;
-
 }
 
 .col {
 	box-sizing: border-box;
-	padding: 0;
-	margin: 0;
+	padding: 0; margin: 0;
 	height:100%;	/* need for firefox ? */
-/*
-	display:table-cell;
-	vertical-align: top;
-*/
 }
 
 
 /* SIDEBAR */
-.sidebar { background: #212121; width: 64px; border-right: 2px solid #111; }
+.sidebar { background: var(--dark); width: 52px; border-right: 2px solid var(--darker); }
 
-.sidebar_panel { background: #2C2C2C; width: 256px; border-right: 2px solid #111; }
+.sidebar_panel { background: var(--dark); width: 256px; border-right: 2px solid var(--darker); }
 
-.sidebar_panel h1 { color: #eee; height: 48px; padding: 10px; }
+.sidebar_panel h1 { color: var(--font-light); height: 48px; padding: 10px; }
 
 .sidebar_box {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	align-items: center;
-	padding-top: 4px;
+	padding: 6px;
 }
 
 .sidebar_button {
-	background: none;
-	align-items: center;
-	border: 2px solid rgba(0,0,0,0);
-	border-radius: 4px;
-	box-sizing: border-box;
-	cursor: pointer;
 	display: inline-flex;
 	justify-content: center;
-	min-block-size: 44px;
-	min-inline-size: 44px;
-	padding: 4px;
-	position: relative;
-	text-align: center;
-	text-decoration: none;
+	align-items: center;
+	background: none;
+	border: 2px solid rgba(0,0,0,0);
+	border-radius: 4px;
+	cursor: pointer;
 	margin: 10px 0;
 }
 
-.sidebar_box button:hover {	background: #4A4D59; border-color: #787878; }
+.sidebar_button:hover {	background: var(--dark-lighter); border-color: var(--dark-gray); }
 
 
 .editor-logo {
-	width: 34px;
-	height: 34px;
-	display: initial;
-	margin-top: 4px;
-	margin-bottom: 8px;
+	width: 34px; height: 34px;
+	margin-top: 4px; margin-bottom: 8px;
 }
 
 
 #editor_box {
-	background-color:#222;
 	width:60%;
 	min-width:400px;
 	overflow: auto;
 	border: 1px solid #111;
-
-resize: horizontal;
-
-
-/* flex-grow flex-shrink flex-basis */
-flex: 1 0 auto;
+	resize: horizontal;
+	/* flex-grow flex-shrink flex-basis */
+	flex: 1 0 auto;
 }
 
 #output_box {
-	background-color:#222;
 	overflow: auto;
 	border: 1px solid #111;
-
-flex: 2 1 0;
+	/* flex-grow flex-shrink flex-basis */
+	flex: 2 1 0;
 }
 
 .col header {
 	display: flex;
 	align-items: center;
-	color: #eee;
-	background: #212121;
-	margin: 0;
 	height: 48px;
-	border-top: 1px solid #111;
-	border-bottom: 1px solid #111;
+	color: var(--font-light);
+	border-top: 1px solid var(--dark);
+	border-bottom: 2px solid var(--darker);
 }
 
 .col_name, .editor_filename {
@@ -138,9 +149,7 @@ flex: 2 1 0;
 	align-items: center;
 	justify-content: center;
 	min-width: 96px;
-	color: #eee;
-	background: #212121;
-	border-right: 1px solid #666;
+	border-right: 1px solid var(--dark-gray);
 	font-size: 14px;
 }
 
@@ -153,39 +162,35 @@ flex: 2 1 0;
 	margin: 0 8px;
 	cursor: pointer;
 	outline: none;
-	color: #eee;
-	font-family: 'Euclid Circular A', sans-serif;
+	color: var(--font-light);
 	font-style: normal;
 	font-weight: bold;
 }
 
-.col header button:active { box-shadow: 0 2px #444; transform: translateY(1px); }
+.col header button:active { box-shadow: 0 2px var(--dark-light); transform: translateY(1px); }
 
 
 /* COLOR BUTTON */
-.bt_blue { background: #0556f3;	border: 1px solid dodgerblue; }
-.bt_blue:hover { border: 1px solid midnightblue; }
-.bt_blue:active { background-color: dodgerblue; }
+.bt_blue { color: var(--font-light); background: var(--blue);	border: 1px solid var(--blue-light); }
+.bt_blue:hover { border: 1px solid var(--blue-dark); }
+.bt_blue:active { background: var(--blue-light); }
 
-.bt_green { background: #078D07; border: 1px solid yellowgreen; }
-.bt_green:hover { border: 1px solid darkgreen; }
-.bt_green:active { background-color: mediumseagreen; }
+.bt_green { color: var(--font-light); background: var(--green); border: 1px solid var(--green-light); }
+.bt_green:hover { border: 1px solid var(--green-dark); }
+.bt_green:active { background: var(--green-light); }
 
-.bt_dark { background: #2C2C2C; border: 1px solid #3B3B3B; }
-.bt_dark:hover { border: 1px solid #2A2A2A; }
-.bt_dark:active { background-color: #212121; }
+.bt_dark { color: var(--font-light); background: var(--dark-light); border: 1px solid var(--dark-lighter); }
+.bt_dark:hover { border: 1px solid var(--dark-light); }
+.bt_dark:active { background: var(--dark-lighter); }
 
 
 /* EDITOR & OUTPUT */
 #editor, #output {
 	height: calc(100% - 52px);
 	width: 100%;
-	margin: 0;
 	padding: 4px;
 	font-family: Consolas, monospace;
 	font-size: 14px;
-	background: #282828;
-	box-sizing: border-box;
 	overflow: auto;
 }
 
@@ -193,13 +198,12 @@ flex: 2 1 0;
 /* OUTPUT */
 #output p {
 	max-width: 99%;
-	margin: 0;
 	padding: 2px;
-	color: #eee;
+	color: var(--font-light);
 }
 
-#output p.end{ color: #829482; }
-#output p.error{ color: #A83636; }
+#output p.end{ color: var(--dark-gray); }
+#output p.error{ color: var(--red); }
 
 
 /* SocketIO STATUS */
@@ -211,26 +215,18 @@ flex: 2 1 0;
 }
 
 #socketio_status { width: 16px; height: 16px; border-radius: 6px;}
-.connected { background: #00AA00; border: 2px solid #0C670C; }
-.disconnected { background: #AA0000; border: 2px solid darkred; }
+.connected { background: var(--green); border: 2px solid #0C670C; }
+.disconnected { background: var(--red); border: 2px solid darkred; }
+
+#panel_settings {
+	text-align: center;
+}
 
 .list_files {}
 
-#add_file {
+.bt_big {
 	display: block;
-	width: 90%;
-	height: 40px;
-	margin: 0 auto;
-	margin-bottom: 8px;
-	border-radius: 8px;
-	text-align: left;
-	padding-left: 16px;
-}
-
-.list_files button {
-	display: block;
-	width: 90%;
-	height: 40px;
+	width: 90%; height: 40px;
 	margin: 0 auto;
 	margin-bottom: 8px;
 	border-radius: 8px;
@@ -242,13 +238,13 @@ flex: 2 1 0;
 #bt_output_toggle { margin-left: auto; width: 34px; height: 34px; padding: 7px; }
 
 #editor_theme {
+	width: 90%;
 	height: 36px;
-	margin: 4px;
-	padding: 0 6px;
+	margin: 4px; padding: 0 6px;
 	text-align: center;
-	background: #2C2C2C;
-	color: #FFFFFF;
-	border: 1px solid #292E3B;
+	background: var(--dark-light);
+	color: var(--font-light);
+	border: 1px solid var(--dark-lighter);
 	border-radius: 4px;
 }
 
@@ -257,18 +253,17 @@ flex: 2 1 0;
 .tooltip {
   position: relative;
   display: inline-block;
-  border-bottom: 1px dotted black;
+  border-bottom: 2px solid var(--darker);
 }
 
 .tooltip .tooltiptext {
   visibility: hidden;
   width: 120px;
-  background-color: black;
-  color: #fff;
+  background: var(--dark-light);
+  color: var(--font-light);
   text-align: center;
   border-radius: 6px;
-  padding: 5px 0;
-
+  padding: 8px 4px;
   /* Position the tooltip */
   position: absolute;
   z-index: 1;
@@ -295,11 +290,12 @@ flex: 2 1 0;
 /* Modal Content/Box */
 .modal-content {
   background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
+  margin: 20% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
+  width: 80%;
   max-width: 600px;
+  font-size: 15px;
 }
 
 /* The Close Button */

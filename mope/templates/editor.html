@@ -26,7 +26,7 @@
 	<div class="app">
 
 		<div class="col sidebar" id="sidebar_bar" >
-			<div class="sidebar_box">
+			<div class="sidebar_box align-items-center">
 				<img class="editor-logo" src="{{ url_for('static', filename='img/python.svg') }}" alt="Editor logo">
 				
 				<button id="toggle_sidebar" class="sidebar_button" type="button">
@@ -47,28 +47,30 @@
 
 
 		<div class="col sidebar_panel hidden" id="sidebar_panel">
-			<div id="panel_files">
-				<h1>Project files</h1>
-				<button id="add_file">Add file +</button>
-				<hr />
-				<div class="list_files">
-					<button>main.py</button>
-					<button>test.py</button>
-					<button>sysinfo.py</button>
+			<div class="sidebar_box">
+				<div id="panel_files">
+					<h1>Project files</h1>
+					<button id="add_file" class="bt_green bt_big">Add file +</button>
+					<hr />
+					<div class="list_files">
+						<button class="bt_big bt_dark">main.py</button>
+						<button class="bt_big bt_dark">test.py</button>
+						<button class="bt_big bt_dark">sysinfo.py</button>
+					</div>
 				</div>
-			</div>
 
-			<div id="panel_settings">
-				<h1>Settings</h1>
-				<label for="editor_theme">Theme</label>
-				<select name="editor_theme" id="editor_theme">
-					<option value="dracula">dracula</option>
-					<option value="twilight">twilight</option>
-					<option value="monokai">monokai</option>
-					<option value="nord_dark">nord_dark</option>
-					<option value="one_dark">one_dark</option>
-					<option value="tomorrow_night">tomorrow_night</option>
-				</select>
+				<div id="panel_settings">
+					<h1>Settings</h1>
+					<label class="align-left font-light" for="editor_theme">Theme</label>
+					<select name="editor_theme" id="editor_theme">
+						<option value="dracula">dracula</option>
+						<option value="twilight">twilight</option>
+						<option value="monokai">monokai</option>
+						<option value="nord_dark">nord_dark</option>
+						<option value="one_dark">one_dark</option>
+						<option value="tomorrow_night">tomorrow_night</option>
+					</select>
+				</div>
 			</div>
 
 		</div>
@@ -89,8 +91,8 @@
 
 				<button id="bt_run" class="bt_blue">run</button>
 				
-				<button id="bt_test" class="bt_dark">test</button>
-				<button id="bt_dbg" class="bt_dark">dbg</button>
+				<button id="bt_test" class="bt_dark hidden">test</button>
+				<button id="bt_dbg" class="bt_dark hidden">dbg</button>
 
 <!--
 
@@ -125,13 +127,12 @@
 			<div class="modal-content__input-section">
 				<label for="0">Name your file</label>
 				<div class="modal-content__input">
-					<input type="text" id="0" value="">
+					<input type="text" id="new_filename" value="">
 				</div>
 			</div>
 		</div>
 		<div class="modal-content__buttons">
 			<button class="btn btn--primary"><span>Add file</span></button>
-			<button class="btn btn--secondary"><span>Cancel</span></button>
 		</div>
 	</div>
 </div>
