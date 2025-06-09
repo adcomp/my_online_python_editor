@@ -29,10 +29,6 @@
 			<div class="sidebar_box align-items-center">
 				<img class="editor-logo" src="{{ url_for('static', filename='img/python.svg') }}" alt="Editor logo">
 				
-				<button id="toggle_sidebar" class="sidebar_button" type="button">
-					<img src="{{ url_for('static', filename='img/toggle.svg') }}" alt="toggle" />
-				</button>
-				
 				<button id="bt_files" class="sidebar_button" type="button">
 					<img src="{{ url_for('static', filename='img/files.svg') }}" alt="files" />
 				</button>
@@ -40,7 +36,10 @@
 				<button id="bt_settings" class="sidebar_button" type="button">
 					<img src="{{ url_for('static', filename='img/settings.svg') }}" alt="settings" />
 				</button>
-
+				
+				<button id="toggle_sidebar" class="sidebar_button hidden" type="button">
+					<img src="{{ url_for('static', filename='img/toggle.svg') }}" alt="toggle" />
+				</button>
 
 			</div>
 		</div>
@@ -52,10 +51,10 @@
 					<h1>Project files</h1>
 					<button id="add_file" class="bt_green bt_big">Add file +</button>
 					<hr />
-					<div class="list_files">
-						<button class="bt_big bt_dark">main.py</button>
-						<button class="bt_big bt_dark">test.py</button>
-						<button class="bt_big bt_dark">sysinfo.py</button>
+					<div id="list_files" class="list_files">
+						<button class="bt_big bt_dark bt_file selected">main.py</button>
+						<button class="bt_big bt_dark bt_file">test.py</button>
+						<button class="bt_big bt_dark bt_file">sysinfo.py</button>
 					</div>
 				</div>
 
@@ -89,10 +88,10 @@
 					</div>
 				</div>
 
-				<button id="bt_run" class="bt_blue">run</button>
+				<button id="bt_run" class="btn bt_blue">run</button>
 				
-				<button id="bt_test" class="bt_dark hidden">test</button>
-				<button id="bt_dbg" class="bt_dark hidden">dbg</button>
+				<button id="bt_test" class="btn bt_dark hidden">test</button>
+				<button id="bt_dbg" class="btn bt_dark hidden">dbg</button>
 
 <!--
 
@@ -107,7 +106,7 @@
 		<div class="col" id="output_box">
 			<header>
 				<div class="col_name">OUTPUT</div>
-				<button id="bt_clear" class="bt_green">clear</button>
+				<button id="bt_clear" class="btn bt_green">clear</button>
 			</header>
 			<div id="output"></div>
 		</div>
@@ -116,23 +115,26 @@
 
 
 <!-- The Modal -->
-<div id="modal_div" class="modal">
+<div id="modal_addfile" class="modal">
   <!-- Modal content -->
 	<div class="modal-content">
 		<span id="modal_close" class="close">&times;</span>
 		<div class="modal-content__header">
-			<h2 class="modal-content__heading">Add a new file ...</h2>
+			<h2 class="font-dark">Add a new file ...</h2>
 		</div>
 		<div class="modal-content__body">
 			<div class="modal-content__input-section">
-				<label for="0">Name your file</label>
+				<label for="new_filename">Name your file</label>
 				<div class="modal-content__input">
 					<input type="text" id="new_filename" value="">
 				</div>
 			</div>
 		</div>
-		<div class="modal-content__buttons">
-			<button class="btn btn--primary"><span>Add file</span></button>
+		<div>
+			<span id="add_file_error" class="error"></span>
+		</div>
+		<div class="align-right modal-content__buttons">
+			<button id="bt_mod_add_file" class="btn bt_blue btn--primary"><span>Add file</span></button>
 		</div>
 	</div>
 </div>
@@ -221,7 +223,8 @@
 				$("#bt_run").text("stop");
 				$("#output").text("");
 				var code = editor.getValue();
-				socket.emit("execute_code", code);
+				var filename = $("#editor_filename").text()
+				socket.emit("execute_code", filename, code);
 			}
 		else {
 				$("#bt_run").text("run");
@@ -231,11 +234,14 @@
 
 	// Get code from server and paste into editor
 	function get_code(filename="main.py") {
-		console.log(filename)
-		
+
 		$.get("get_code", { "name": filename }, function(data, status){
-			console.log("get code status", status);
-			editor.setValue(data, 1)
+			console.log("get code for :" + filename + " = ", status);
+			console.log(data)
+			//~ editor.setValue(data, 1)
+			editor.session.setValue(data)
+
+			$("#editor_filename").text(filename)
 		});
 	}
 
@@ -258,7 +264,61 @@
 
 	// Button "toggle_sidebar"
 	$("#toggle_sidebar").click(function() {
-		$("#sidebar_panel").toggleClass("hidden");
+		$("#sidebar_panel").addClass("hidden");
+		$("#toggle_sidebar").addClass("hidden");
+	});
+
+
+	function toggle_sidebar_panel() {
+		is_sidebar_hidden = $("#sidebar_panel").hasClass("hidden");
+		if (is_sidebar_hidden) {
+			$("#sidebar_panel").removeClass("hidden");
+			$("#toggle_sidebar").removeClass("hidden");
+			}
+		else {
+			$("#sidebar_panel").addClass("hidden");
+			$("#toggle_sidebar").addClass("hidden");
+			}
+	};
+
+	// Button "bt_files"
+	$("#bt_files").click(function() {
+		is_sidebar_hidden = $("#sidebar_panel").hasClass("hidden");
+		is_panel_files_hidden = $("#panel_files").hasClass("hidden");
+		
+		// panel hidden
+		if (is_sidebar_hidden) {
+			$("#panel_settings").addClass("hidden");
+			$("#panel_files").removeClass("hidden");
+			toggle_sidebar_panel();
+			}
+		else if (is_panel_files_hidden) { 
+			$("#panel_settings").addClass("hidden");
+			$("#panel_files").removeClass("hidden");
+			}
+		else {
+			toggle_sidebar_panel();
+			}
+	});
+
+	// Button "bt_settings"
+	$("#bt_settings").click(function() {
+		is_sidebar_hidden = $("#sidebar_panel").hasClass("hidden");
+		is_panel_settings_hidden = $("#panel_settings").hasClass("hidden");
+		
+		// panel hidden
+		if (is_sidebar_hidden) {
+			$("#panel_files").addClass("hidden");
+			$("#panel_settings").removeClass("hidden");
+			toggle_sidebar_panel();
+			}
+		else if (is_panel_settings_hidden) { 
+			$("#panel_files").addClass("hidden");
+			$("#panel_settings").removeClass("hidden");
+			}
+		else {
+			toggle_sidebar_panel();
+			}
 	});
 
 
@@ -288,12 +348,56 @@
 	// TODO : just a test ..
 	// $("#bt_test").click(function() { );
 
+
+
+	function update_bt_file_event() {
+		$(".bt_file").on('click', function(event){
+
+			event.stopPropagation();
+			event.stopImmediatePropagation();
+
+			var filename = $(this).text();
+			$(".bt_file").removeClass("selected");
+			$(this).addClass("selected");
+			//~ console.log('filename:', filename);
+			get_code(filename)
+			
+		});
+	};
+
+	// Button Add File ( open modal window )
 	$("#add_file").click(function() {
-		$("#modal_div").css("display", "block");
+		$("#modal_addfile").css("display", "block");
+	});
+
+	// Button (model) add file
+	$("#bt_mod_add_file").click(function() {
+		filename = $("#new_filename").val();
+		socket.emit("add_file", filename, function(data) {
+			// console.log("add_file : " + filename, data);
+
+			if (data == "ERROR") {
+				console.log("ERROR: can't write to file");
+				$("#add_file_error").text("ERROR: can't write to file");
+				}
+			else if (data == "EXIST") {
+				console.log("FILE ALREADY EXISTS ..")
+				$("#add_file_error").text("FILE ALREADY EXISTS ..");
+				}
+			else {
+				$("#modal_addfile").css("display", "none");
+				// add new button to panel files
+				$("#list_files").append(
+				'<button class="bt_big bt_dark bt_file">' + data + '</button>'
+				);
+				update_bt_file_event();
+				}
+				
+			});
 	});
 
 	$("#modal_close").click(function() {
-		$("#modal_div").css("display", "none");
+		$("#modal_addfile").css("display", "none");
 	});
 
 
@@ -306,52 +410,9 @@
 
 	// Get the code from server when page is loaded
 	$(document).ready(function() {
-		get_code();		
+		get_code();
+		update_bt_file_event();		
 	});
-
-
-
-
-
-
-// Get the modal
-var modal = document.getElementById("myModal");
-
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
-
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
-
-// When the user clicks on the button, open the modal
-btn.onclick = function() {
-  modal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-} 
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </script>

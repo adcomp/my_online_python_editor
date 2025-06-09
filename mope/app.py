@@ -110,7 +110,16 @@ def handle_disconnect(reason):
 
 
 @socketio.on("add_file")
-def add_file(filename):
+def add_file(data):
+	filename = str(data)
+	
+	# replace all whitespace
+	filename = filename.replace(" ", "")
+	
+	# check if ends with ".py"
+	if not filename.endswith(".py"):
+		filename += ".py"
+
 	print("### ADD FILE : %s" % filename)
 
 	file_realpath = FILE_PATH + filename
@@ -118,36 +127,48 @@ def add_file(filename):
 	# check if file exists ..
 	if os.path.exists(file_realpath):
 		print("=> file already exists ..")
+		return "EXIST"
 
-	else:
+	try:
 		# Creates a new file
 		with open(file_realpath, 'w') as fp:
 			pass
-
+	except:
+		return "ERROR"
+		
+	return filename
+	
 
 @socketio.on("test")
-def my_test():
+def my_test(var1, var2):
+	print("var1:", var1)
+	print("var2:", var2)
+	
 	return "Hello, World!"
 
 
 @socketio.on("execute_code")
-def execute_code(code):
-	print("### SOCKET IO : execute_code ...")
+def execute_code(filename, code):
+	print("### SOCKET IO : execute_code  = ", filename)
 	
 	sid = request.sid
 	emit('execute_code', {"cmd":"START"}, room=sid)
 
+	file_realpath = FILE_PATH + filename
+	
+	print("file_realpath = ", file_realpath)
+
 	try:
-		with open(FILE_REALPATH, "w") as f:
+		with open(file_realpath, "w") as f:
 			f.write(str(code))
 	except:
-		print("can't open/write to file:", FILE_REALPATH)
-		emit('execute_code', {"cmd":"ERROR", "data": "can't open/write to %s:" % FILE_REALPATH}, room=sid)
+		print("can't open/write to file:", file_realpath)
+		emit('execute_code', {"cmd":"ERROR", "data": "can't open/write to %s:" % filename}, room=sid)
 		return
 
 	### -u     : force the stdout and stderr streams to be unbuffered;
 	###			 this option has no effect on stdin; also PYTHONUNBUFFERED=x
-	cmd = "python -u debugger.py " + FILE_NAME
+	cmd = "python -u debugger.py " + filename
 
 	global thread
 	with thread_lock:
@@ -193,15 +214,17 @@ def editor_tmp():
 
 @app.route('/get_code', methods=['GET'])
 def get_code():
+	print("### GET CODE")
 	filename = "main.py"
 	
 	if request.method == 'GET':
 		filename = request.args.get('name', default="main.py", type=str)
 	
 	file_realpath = FILE_PATH + filename
+	print("   - ", file_realpath)
 	
 	try:
-		with open(FILE_REALPATH, 'r') as file:
+		with open(file_realpath, 'r') as file:
 			file_content = file.read()
 		return file_content
 	except:
