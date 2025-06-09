@@ -234,7 +234,18 @@ $("#bt_dbg").click(function() {
 });
 
 // TODO : just a test ..
-// $("#bt_test").click(function() { );
+$("#bt_download").click(function() {
+    let valueinput = editor.getValue();
+	let filename = $("#editor_filename").text()
+    let blobdtMIME = new Blob([valueinput], { type: "text/plain" })
+    let url = URL.createObjectURL(blobdtMIME)
+    let anele = document.createElement("a")
+    anele.setAttribute("download", "Downloaded Successfully");
+    anele.href = url;
+    anele.download = filename;
+    anele.click();
+    //~ console.log(blobdtMIME)
+});
 
 
 function update_bt_file_event() {
