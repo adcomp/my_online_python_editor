@@ -225,6 +225,15 @@ $("#bt_font_p").click(function () {
 		}
 });
 
+$("#bt_fullscreen").click(function () { 
+	if (document.fullscreenElement) {
+		// If there is a fullscreen element, exit full screen.
+		document.exitFullscreen();
+		return;
+	}
+	document.querySelector(".app").requestFullscreen();
+});
+
 
 // TODO : just a test ..
 $("#bt_dbg").click(function() {
