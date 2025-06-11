@@ -147,6 +147,23 @@ def my_test(var1, var2):
 	return "Hello, World!"
 
 
+@socketio.on("save_script")
+def save_script(filename, code):
+	print("### SOCKET IO : save_script  = ", filename)
+
+	file_realpath = FILE_PATH + filename
+	
+	print("file_realpath = ", file_realpath)
+
+	try:
+		with open(file_realpath, "w") as f:
+			f.write(str(code))
+	except:
+		print("can't open/write to file:", file_realpath)
+		emit('execute_code', {"cmd":"ERROR", "data": "can't open/write to %s:" % filename}, room=sid)
+		return
+
+
 @socketio.on("execute_code")
 def execute_code(filename, code):
 	print("### SOCKET IO : execute_code  = ", filename)
@@ -207,9 +224,14 @@ def editor():
 	return render_template('editor.html')
 
 
-@app.route('/editor_tmp')
-def editor_tmp():
-	return render_template('editor_tmp.html')
+@app.route('/script_list')
+def script_list():
+	list_script = []
+	for f in os.listdir("./script"):
+		if f.endswith(".py"):
+			list_script.append(f)
+			
+	return list_script
 
 
 @app.route('/get_code', methods=['GET'])

@@ -57,8 +57,10 @@
 					<hr />
 					<div id="list_files" class="list_files">
 						<button class="bt_big bt_dark bt_file selected">main.py</button>
+<!--
 						<button class="bt_big bt_dark bt_file">test.py</button>
 						<button class="bt_big bt_dark bt_file">sysinfo.py</button>
+-->
 					</div>
 				</div>
 
@@ -99,10 +101,12 @@
 				</div>
 
 				<button id="bt_run" class="btn bt_blue" disabled>run</button>
+				<button id="bt_save" class="btn bt_purple" disabled>save</button>
 				<button id="bt_dbg" class="btn bt_dark hidden">dbg</button>
 
 				<img id="bt_fullscreen" class="push_right" src="{{ url_for('static', filename='img/fullscreen.svg') }}" alt="fullscreen" />
-				<img id="bt_output_toggle" src="{{ url_for('static', filename='img/toggle.svg') }}" alt="toggle output" />
+				<img id="bt_show_doc" src="{{ url_for('static', filename='img/doc.svg') }}" alt="show doc" />
+				<img id="bt_output_toggle" src="{{ url_for('static', filename='img/output.svg') }}" alt="toggle output" />
 					
 			</header>
 			<div id="editor" contenteditable="true" spellcheck="false"></div>
@@ -114,6 +118,17 @@
 				<button id="bt_clear" class="btn bt_green">clear</button>
 			</header>
 			<div id="output"></div>
+		</div>
+		
+		<div class="col hidden" id="pythondoc_box">
+			<header>
+				<div class="col_name">Python Doc</div>
+				<button id="bt_pythondoc_reload" class="btn bt_yellow">reload</button>
+			</header>
+<!--
+			allow-scripts allow-top-navigation-by-user-activation allow-same-origin
+-->
+			<iframe id="python_doc" src="https://docs.python.org/3/" frameborder="0"></iframe> 
 		</div>
 
 	</div>

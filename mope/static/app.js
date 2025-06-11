@@ -3,6 +3,11 @@
 var editor_font_size = 14;
 var editor = null;
 
+// global variables
+var script_is_running = false;
+
+
+
 function configure_editor() {
 	editor = ace.edit("editor")
 	editor.setTheme("ace/theme/dracula");
@@ -24,10 +29,8 @@ socket.on("connect", () => {
 	console.log("connected");
 	$("#socketio_status").removeClass("disconnected");
 	$("#socketio_status").addClass("connected");
-	$("#bt_run").prop(
-		"disabled",
-		false
-	);
+	$("#bt_run").prop("disabled", false);
+	$("#bt_save").prop("disabled", false);
 	$("#bt_files").removeClass("hidden");
 });
 
@@ -36,12 +39,17 @@ socket.on("disconnect", () => {
 	console.log("disconnected");
 	$("#socketio_status").removeClass("connected");
 	$("#socketio_status").addClass("disconnected");
-	$("#bt_run").prop(
-		"disabled",
-		true
-	);
+	$("#bt_run").prop("disabled", true);
+	$("#bt_save").prop("disabled", true);
 	$("#bt_files").addClass("hidden");
 });
+
+
+// Socket onError callback
+socket.on("error", function(msg) {
+	console.log(msg);
+});
+
 
 // Event sent by Server when running code
 socket.on("execute_code", function(msg) {
@@ -75,50 +83,78 @@ socket.on("execute_code", function(msg) {
 });
 
 
+// get scripts list from server
+function get_script_list() {
+	console.log("get script list");
+	
+	$.get("script_list", function(data, status){
+		for (var i=0; i<data.length; i++) {
+			var name = data[i];
+			if (name != "main.py") {
+				add_button_file(name);
+			}
+		}
+	})
+};
+
+
+function add_button_file(name) {
+	var $btn = $("<button>", {"class": "bt_big bt_dark bt_file", "text": name});
+	$btn.click(function(){
+		if ($(this).hasClass("selected")) { return; }
+		var filename = $(this).text();
+		$(".bt_file").removeClass("selected");
+		$(this).addClass("selected");
+		get_code(filename)
+	});
+	$("#list_files").append($btn);
+};
+
+
 // append data to output tag
 function append_output(data, type) {
 	if (data == "") { data = "<br />"; }
 	
 	if (type == undefined) {
 		$("#output").append("<p>" + data + "</p>");
-		}
+	}
 	else {
 		$("#output").append('<p class="' + type + '">' + data + "</p>");
-		}
+	}
 }
+
 
 // Send code to server Or ask to stop ..
 function run_code() {
 	if ($("#bt_run").text() == "run") {
-			$("#bt_run").text("stop");
-			$("#output").text("");
-			var code = editor.getValue();
-			var filename = $("#editor_filename").text()
-			socket.emit("execute_code", filename, code);
+		$("#bt_run").text("stop");
+		$("#output").text("");
+		var code = editor.getValue();
+		var filename = $("#editor_filename").text()
+		socket.emit("execute_code", filename, code);
 		}
 	else {
-			$("#bt_run").text("run");
-			socket.emit("stop_code");
-		}
+		$("#bt_run").text("run");
+		socket.emit("stop_code");
+	}
 }
+
 
 // Get code from server and paste into editor
 function get_code(filename="main.py") {
 
 	$.get("get_code", { "name": filename }, function(data, status){
-		console.log("get code for :" + filename + " = ", status);
-		console.log(data)
-		//~ editor.setValue(data, 1)
 		editor.session.setValue(data)
-
 		$("#editor_filename").text(filename)
 	});
 }
+
 
 // set Editor theme
 function set_editor_theme(theme) {
 	editor.setTheme("ace/theme/" + theme);
 }
+
 
 // Button "clear"
 $("#bt_clear").click(function() {
@@ -126,11 +162,23 @@ $("#bt_clear").click(function() {
 	}
 );
 
+
 // Button "run"
 $("#bt_run").click(function() { 
 	run_code();
 	}
 );
+
+
+// Button "save"
+$("#bt_save").click(function() {
+	console.log("save script ..");
+		var code = editor.getValue();
+		var filename = $("#editor_filename").text();
+		socket.emit("save_script", filename, code);
+	}
+);
+
 
 // Button "toggle_sidebar"
 $("#toggle_sidebar").click(function() {
@@ -150,6 +198,7 @@ function toggle_sidebar_panel() {
 		$("#toggle_sidebar").addClass("hidden");
 		}
 };
+
 
 // Button "bt_files"
 $("#bt_files").click(function() {
@@ -171,6 +220,7 @@ $("#bt_files").click(function() {
 		}
 });
 
+
 // Button "bt_settings"
 $("#bt_settings").click(function() {
 	is_sidebar_hidden = $("#sidebar_panel").hasClass("hidden");
@@ -191,10 +241,6 @@ $("#bt_settings").click(function() {
 		}
 });
 
-
-$("#bt_output_toggle").click(function () { 
-	$("#output_box").toggle();
-});
 
 
 $("#editor_resize").on('input change', function() {
@@ -225,6 +271,15 @@ $("#bt_font_p").click(function () {
 		}
 });
 
+
+$("#bt_output_toggle").click(function () {
+	if ( ! $("#pythondoc_box").hasClass("hidden") ) {
+		$("#pythondoc_box").addClass("hidden");
+		}
+	$("#output_box").toggleClass("hidden");
+});
+
+
 $("#bt_fullscreen").click(function () { 
 	if (document.fullscreenElement) {
 		// If there is a fullscreen element, exit full screen.
@@ -235,6 +290,14 @@ $("#bt_fullscreen").click(function () {
 });
 
 
+$("#bt_show_doc").click(function() {
+	if ( ! $("#output_box").hasClass("hidden") ) {
+		$("#output_box").addClass("hidden");
+		}
+	$("#pythondoc_box").toggleClass("hidden");
+});
+
+
 // TODO : just a test ..
 $("#bt_dbg").click(function() {
 	socket.emit("test", function(data) {
@@ -242,7 +305,8 @@ $("#bt_dbg").click(function() {
 		});
 });
 
-// TODO : just a test ..
+
+// Download script
 $("#bt_download").click(function() {
     let valueinput = editor.getValue();
 	let filename = $("#editor_filename").text()
@@ -257,8 +321,16 @@ $("#bt_download").click(function() {
 });
 
 
+$("#bt_pythondoc_reload").click(function() {
+	//~ $("#python_doc").contentWindow.location.reload(true);
+	$("#python_doc").attr('src', $("#python_doc").attr('src'));
+});
+
+
 function update_bt_file_event() {
 	$(".bt_file").on('click', function(event){
+		
+		if ($(this).hasClass("selected")) { return; }
 
 		event.stopPropagation();
 		event.stopImmediatePropagation();
@@ -266,38 +338,34 @@ function update_bt_file_event() {
 		var filename = $(this).text();
 		$(".bt_file").removeClass("selected");
 		$(this).addClass("selected");
-		//~ console.log('filename:', filename);
-		get_code(filename)
-		
+		get_code(filename)	
 	});
 };
+
 
 // Button Add File ( open modal window )
 $("#add_file").click(function() {
 	$("#modal_addfile").css("display", "block");
 });
 
+
 // Button (model) add file
 $("#bt_mod_add_file").click(function() {
 	filename = $("#new_filename").val();
-	socket.emit("add_file", filename, function(data) {
-		// console.log("add_file : " + filename, data);
+	socket.emit("add_file", filename, function(name) {
 
-		if (data == "ERROR") {
+		if (name == "ERROR") {
 			console.log("ERROR: can't write to file");
 			$("#add_file_error").text("ERROR: can't write to file");
 			}
-		else if (data == "EXIST") {
+		else if (name == "EXIST") {
 			console.log("FILE ALREADY EXISTS ..")
 			$("#add_file_error").text("FILE ALREADY EXISTS ..");
 			}
 		else {
 			$("#modal_addfile").css("display", "none");
 			// add new button to panel files
-			$("#list_files").append(
-			'<button class="bt_big bt_dark bt_file">' + data + '</button>'
-			);
-			update_bt_file_event();
+			add_button_file(name);
 			}
 			
 		});
@@ -308,6 +376,12 @@ $("#modal_close").click(function() {
 });
 
 
+function app_log(txt) {
+	if (DEBUG) {
+		console.log(txt);
+		}
+};
+
 // Keybind ( F8 )
 window.onkeydown = function(evt) {
 	if (evt.keyCode == 119) //F8
@@ -316,9 +390,10 @@ window.onkeydown = function(evt) {
 
 // Get the code from server when page is loaded
 $(document).ready(function() {
-	configure_editor()
+	get_script_list();
+	configure_editor();
 	get_code();
 	update_bt_file_event();
-	
 });
+
 
