@@ -4,7 +4,7 @@ var editor_font_size = 14;
 var editor = null;
 
 // global variables
-var script_is_running = false;
+var script_is_running = true;
 
 
 
@@ -73,35 +73,48 @@ socket.on("execute_code", function(msg) {
 	if (msg.cmd == "ERROR") {
 		append_output("--- ERROR ---", "error");
 		append_output(msg.data);
-		$("#bt_run").text("run");
+		after_running_code();
 		}
 
 	if (msg.cmd == "END") {
 		append_output("--- END PROCESS ---", "end")
-		$("#bt_run").text("run");
+		after_running_code();
 		}
 });
+
+// reset stuff after running code 
+function after_running_code() {
+	$("#bt_run").text("run");
+	editor.setReadOnly(false);
+	script_is_running = false;
+};
 
 
 // get scripts list from server
 function get_script_list() {
-	console.log("get script list");
-	
 	$.get("script_list", function(data, status){
 		for (var i=0; i<data.length; i++) {
 			var name = data[i];
-			if (name != "main.py") {
-				add_button_file(name);
-			}
+			add_button_file(name);
 		}
 	})
 };
 
 
+// create BUTTON for script "name" and add it to list_files
 function add_button_file(name) {
 	var $btn = $("<button>", {"class": "bt_big bt_dark bt_file", "text": name});
 	$btn.click(function(){
+		// check if a script is already running !!!
+		if (script_is_running == true) {
+			alert("Can't change script, another one is already running ...");
+			return;
+			}
+		
+		// if already selected, return
 		if ($(this).hasClass("selected")) { return; }
+		
+		// else load script to the editor ..
 		var filename = $(this).text();
 		$(".bt_file").removeClass("selected");
 		$(this).addClass("selected");
@@ -113,11 +126,13 @@ function add_button_file(name) {
 
 // append data to output tag
 function append_output(data, type) {
+	// if no data : inserts a single line break
 	if (data == "") { data = "<br />"; }
-	
+	// default output
 	if (type == undefined) {
 		$("#output").append("<p>" + data + "</p>");
 	}
+	// output with class ( like ERROR .. )
 	else {
 		$("#output").append('<p class="' + type + '">' + data + "</p>");
 	}
@@ -127,15 +142,20 @@ function append_output(data, type) {
 // Send code to server Or ask to stop ..
 function run_code() {
 	if ($("#bt_run").text() == "run") {
+		// RUN
 		$("#bt_run").text("stop");
 		$("#output").text("");
 		var code = editor.getValue();
 		var filename = $("#editor_filename").text()
 		socket.emit("execute_code", filename, code);
+		// don't forget to set read only for the editor !
+		editor.setReadOnly(true);
+		script_is_running = true;
 		}
 	else {
-		$("#bt_run").text("run");
+		// STOP
 		socket.emit("stop_code");
+		after_running_code();
 	}
 }
 
@@ -187,6 +207,7 @@ $("#toggle_sidebar").click(function() {
 });
 
 
+// show / hide sidebar panel
 function toggle_sidebar_panel() {
 	is_sidebar_hidden = $("#sidebar_panel").hasClass("hidden");
 	if (is_sidebar_hidden) {
@@ -200,7 +221,7 @@ function toggle_sidebar_panel() {
 };
 
 
-// Button "bt_files"
+// Button "bt_files" : show panel with list_files visible
 $("#bt_files").click(function() {
 	is_sidebar_hidden = $("#sidebar_panel").hasClass("hidden");
 	is_panel_files_hidden = $("#panel_files").hasClass("hidden");
@@ -221,7 +242,7 @@ $("#bt_files").click(function() {
 });
 
 
-// Button "bt_settings"
+// Button "bt_settings" : show panel with settings visible
 $("#bt_settings").click(function() {
 	is_sidebar_hidden = $("#sidebar_panel").hasClass("hidden");
 	is_panel_settings_hidden = $("#panel_settings").hasClass("hidden");
@@ -242,18 +263,20 @@ $("#bt_settings").click(function() {
 });
 
 
-
+// this was a test with a input to resize editor ..
 $("#editor_resize").on('input change', function() {
 	set_editor_width($(this).val())
 });
 
 
+// change editor theme from user selection
 $("#editor_theme").on( "change", function() {
 	console.log("change editor theme :" + this.value)
 	editor.setTheme("ace/theme/" + this.value);
 } );
 
 
+// decrease editor font size
 $("#bt_font_m").click(function () { 
 	if (editor_font_size > 10) {
 		editor_font_size -= 2;
@@ -262,7 +285,7 @@ $("#bt_font_m").click(function () {
 		}
 });
 
-
+// increase editor font size
 $("#bt_font_p").click(function () { 
 	if (editor_font_size < 72) {
 		editor_font_size += 2;
@@ -272,6 +295,7 @@ $("#bt_font_p").click(function () {
 });
 
 
+// show / hide output panel
 $("#bt_output_toggle").click(function () {
 	if ( ! $("#pythondoc_box").hasClass("hidden") ) {
 		$("#pythondoc_box").addClass("hidden");
@@ -279,7 +303,7 @@ $("#bt_output_toggle").click(function () {
 	$("#output_box").toggleClass("hidden");
 });
 
-
+// request / exit fullscreen
 $("#bt_fullscreen").click(function () { 
 	if (document.fullscreenElement) {
 		// If there is a fullscreen element, exit full screen.
@@ -289,7 +313,7 @@ $("#bt_fullscreen").click(function () {
 	document.querySelector(".app").requestFullscreen();
 });
 
-
+// show python documenation panel
 $("#bt_show_doc").click(function() {
 	if ( ! $("#output_box").hasClass("hidden") ) {
 		$("#output_box").addClass("hidden");
@@ -297,6 +321,11 @@ $("#bt_show_doc").click(function() {
 	$("#pythondoc_box").toggleClass("hidden");
 });
 
+// reload python documentation ( => home )
+$("#bt_pythondoc_reload").click(function() {
+	//~ $("#python_doc").contentWindow.location.reload(true);
+	$("#python_doc").attr('src', $("#python_doc").attr('src'));
+});
 
 // TODO : just a test ..
 $("#bt_dbg").click(function() {
@@ -320,13 +349,7 @@ $("#bt_download").click(function() {
     //~ console.log(blobdtMIME)
 });
 
-
-$("#bt_pythondoc_reload").click(function() {
-	//~ $("#python_doc").contentWindow.location.reload(true);
-	$("#python_doc").attr('src', $("#python_doc").attr('src'));
-});
-
-
+/*
 function update_bt_file_event() {
 	$(".bt_file").on('click', function(event){
 		
@@ -341,7 +364,7 @@ function update_bt_file_event() {
 		get_code(filename)	
 	});
 };
-
+*/
 
 // Button Add File ( open modal window )
 $("#add_file").click(function() {
@@ -371,6 +394,7 @@ $("#bt_mod_add_file").click(function() {
 		});
 });
 
+// close modal 'window'
 $("#modal_close").click(function() {
 	$("#modal_addfile").css("display", "none");
 });
@@ -393,7 +417,7 @@ $(document).ready(function() {
 	get_script_list();
 	configure_editor();
 	get_code();
-	update_bt_file_event();
+	//~ update_bt_file_event();
 });
 
 

@@ -12,21 +12,19 @@ import shlex
 import threading
 
 # Flask import
-from flask import Flask, request, jsonify, render_template, Blueprint
+from flask import Flask, request, jsonify, render_template
+
 ### TODO
 # from flask_login import current_user
+
 from flask_cors import CORS
+
+# SOCKET.IO
 from flask_socketio import SocketIO, Namespace, send, emit, disconnect
 
 ### need for async_mode !!!
 import eventlet
 eventlet.monkey_patch()
-
-
-### FIXME : filename for code execution ..
-FILE_PATH = os.path.dirname(__file__) + "/script/"
-FILE_NAME = "main.py"
-FILE_REALPATH = FILE_PATH + FILE_NAME
 
 
 ### Server config
@@ -35,12 +33,13 @@ PORT = 9876
 DEBUG = False
 
 
-### Global .. bad  :(
-### FIXME !!
+### Global .. 
+### FIXME !! bad  :(
 thread = None
 thread_lock = threading.Lock()
 proc_exec_code = None
 kill_proc_exec = False
+SCRIPT_PATH = os.path.dirname(__file__) + "/script/"
 
 
 ### Flask APP
@@ -99,18 +98,25 @@ def invoke_process(command):
 	return rc
 
 
+### SOCKET.IO EVENT ###
 @socketio.on("connect")
 def handle_connect():
+	""" event when client connect """
+	
 	print("### SOCKET : Client connected!")
 
 
 @socketio.on("disconnect")
 def handle_disconnect(reason):
+	""" event when client disconnect """
+	
 	print("### SOCKET : Client disconnected:", reason)
 
 
 @socketio.on("add_file")
 def add_file(data):
+	""" create new script with filename """
+	
 	filename = str(data)
 	
 	# replace all whitespace
@@ -122,7 +128,7 @@ def add_file(data):
 
 	print("### ADD FILE : %s" % filename)
 
-	file_realpath = FILE_PATH + filename
+	file_realpath = SCRIPT_PATH + filename
 	
 	# check if file exists ..
 	if os.path.exists(file_realpath):
@@ -137,21 +143,16 @@ def add_file(data):
 		return "ERROR"
 		
 	return filename
-	
-
-@socketio.on("test")
-def my_test(var1, var2):
-	print("var1:", var1)
-	print("var2:", var2)
-	
-	return "Hello, World!"
 
 
 @socketio.on("save_script")
 def save_script(filename, code):
+	""" save code to script file """
+	
+	### TO DO : can be done with flask route [POST] ???
 	print("### SOCKET IO : save_script  = ", filename)
 
-	file_realpath = FILE_PATH + filename
+	file_realpath = SCRIPT_PATH + filename
 	
 	print("file_realpath = ", file_realpath)
 
@@ -166,12 +167,14 @@ def save_script(filename, code):
 
 @socketio.on("execute_code")
 def execute_code(filename, code):
+	""" execute script from filename """
+	
 	print("### SOCKET IO : execute_code  = ", filename)
 	
 	sid = request.sid
 	emit('execute_code', {"cmd":"START"}, room=sid)
 
-	file_realpath = FILE_PATH + filename
+	file_realpath = SCRIPT_PATH + filename
 	
 	print("file_realpath = ", file_realpath)
 
@@ -197,6 +200,8 @@ def execute_code(filename, code):
 
 @socketio.on("stop_code")
 def stop_code():
+	""" stop the process running the script """
+	
 	print("### STOP CODE ###")
 	global kill_proc_exec
 	kill_proc_exec = True
@@ -204,8 +209,10 @@ def stop_code():
 
 @socketio.on_error_default
 def default_error_handler(e):
-	print(request.event["message"]) # "my error event"
-	print(request.event["args"])    # (data,)
+	""" print message on error """
+	
+	print(request.event["message"])
+	print(request.event["args"])
 
 
 def ack():
@@ -216,16 +223,19 @@ def ack():
 ### FLASK ROUTE ###
 @app.route('/')
 def index():
+	""" return index.html """
 	return render_template('index.html')
 
 
 @app.route('/editor')
 def editor():
+	""" return editor.html """
 	return render_template('editor.html')
 
 
 @app.route('/script_list')
 def script_list():
+	""" return an array of script in the directory """
 	list_script = []
 	for f in os.listdir("./script"):
 		if f.endswith(".py"):
@@ -236,13 +246,14 @@ def script_list():
 
 @app.route('/get_code', methods=['GET'])
 def get_code():
+	""" return script from filename """
 	print("### GET CODE")
 	filename = "main.py"
 	
 	if request.method == 'GET':
 		filename = request.args.get('name', default="main.py", type=str)
 	
-	file_realpath = FILE_PATH + filename
+	file_realpath = SCRIPT_PATH + filename
 	print("   - ", file_realpath)
 	
 	try:
@@ -253,18 +264,11 @@ def get_code():
 		return "can't open %s" % filename
 
 
-@app.route('/get_info', methods=['GET'])
-def get_info():
-	print("### GET INFO")
-	if request.method == 'GET':
-		print("  - request method = GET")
-		print(request.args)
-
-	return "Hello, World!"
-
-
 
 if __name__ == '__main__':
-	socketio.run(app, use_reloader=False, debug=DEBUG, port=PORT, host=HOST)
-
-	
+	socketio.run(
+		app,
+		use_reloader=False,
+		debug=DEBUG,
+		port=PORT,
+		host=HOST)
