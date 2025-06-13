@@ -4,8 +4,8 @@ var editor_font_size = 14;
 var editor = null;
 
 // global variables
-var script_is_running = true;
-
+var script_is_running = false;
+var editor_breakpoints = [];
 
 
 function configure_editor() {
@@ -18,6 +18,45 @@ function configure_editor() {
 	// need "plugins"
 	editor.setOption("enableBasicAutocompletion", true);
 	editor.setOption("enableLiveAutocompletion", true);
+
+	// Breakpoint
+	// https://ourcodeworld.com/articles/read/1052/how-to-add-toggle-breakpoints-on-the-ace-editor-gutter
+	editor.on("guttermousedown", function(e) {
+		var target = e.domEvent.target; 
+		
+		if (target.className.indexOf("ace_gutter-cell") == -1){
+			return;
+		}
+
+		if (!editor.isFocused()){
+			return; 
+		}
+
+		if (e.clientX > 25 + target.getBoundingClientRect().left){
+			return;
+		}
+
+		var breakpoints = e.editor.session.getBreakpoints(row, 0);
+		var row = e.getDocumentPosition().row;
+		
+		// If there's a breakpoint already defined, it should be removed, offering the toggle feature
+		if (typeof breakpoints[row] === typeof undefined) {
+			e.editor.session.setBreakpoint(row);
+			editor_breakpoints.push(row);
+		}
+		else {
+			e.editor.session.clearBreakpoint(row);
+
+
+			// remove row from array
+			var index = editor_breakpoints.indexOf(row);
+			if (index !== -1) {
+			  editor_breakpoints.splice(index, 1);
+			}
+		}
+		
+		e.stop();
+	})
 };
 
 
@@ -119,6 +158,9 @@ function add_button_file(name) {
 		$(".bt_file").removeClass("selected");
 		$(this).addClass("selected");
 		get_code(filename)
+		
+		// reset breakpoints
+		editor_breakpoints = [];
 	});
 	$("#list_files").append($btn);
 };
@@ -349,22 +391,6 @@ $("#bt_download").click(function() {
     //~ console.log(blobdtMIME)
 });
 
-/*
-function update_bt_file_event() {
-	$(".bt_file").on('click', function(event){
-		
-		if ($(this).hasClass("selected")) { return; }
-
-		event.stopPropagation();
-		event.stopImmediatePropagation();
-
-		var filename = $(this).text();
-		$(".bt_file").removeClass("selected");
-		$(this).addClass("selected");
-		get_code(filename)	
-	});
-};
-*/
 
 // Button Add File ( open modal window )
 $("#add_file").click(function() {
@@ -372,7 +398,7 @@ $("#add_file").click(function() {
 });
 
 
-// Button (model) add file
+// Button (modal) add file
 $("#bt_mod_add_file").click(function() {
 	filename = $("#new_filename").val();
 	socket.emit("add_file", filename, function(name) {
